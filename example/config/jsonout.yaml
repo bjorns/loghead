@@ -9,7 +9,7 @@ root:
 # debug level to a specific file
 custom_package:
   source:
-    package: "hirsi.formatters"
+    package: "kuvio.formatters"
   format: json
   write:
     - file:

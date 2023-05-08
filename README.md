@@ -1,18 +1,18 @@
-# Introduction to Hirsi
+# Introduction to Kuvio
 
-Hirsi is a new logging package for Python. Its primary goals are beauty and developer Joy.
+Kuvio is a new logging package for Python. Its primary goals are beauty and developer Joy.
 
 
 ## Frequently Asked Questions
 
-### How does Hirsi promote developer Joy?
+### How does Kuvio promote developer Joy?
 
-The primary way Hirsi tries to make your life easier is by clear communication
+The primary way Kuvio tries to make your life easier is by clear communication
 and reducing unexpected behavior:
 
-* Every object in Hirsi can be printed to stderr for easy debugging in case the
+* Every object in Kuvio can be printed to stderr for easy debugging in case the
 log is not doing what you want
 * All logging configuration can be dynamically updated, you do not need to
 restart or redeploy your app to   change a log level, or change logging target.
-* When something is wrong, Hirsi will always tell you what it doesnt recognize
+* When something is wrong, Kuvio will always tell you what it doesnt recognize
 and to the best of its ability, what it expected.

@@ -1,7 +1,7 @@
-import hirsi
+import kuvio
 
 def main():
-	hirsi.info("Hello, world!");
+	kuvio.info("Hello, world!");
 
 if __name__ == '__main__':
 	main()
