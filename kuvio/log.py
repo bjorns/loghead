@@ -1,8 +1,11 @@
 """
 Logs filter and augment messages
 """
-from .write import Writer, StderrWriter
+from .event import Event
+from .format import Format, SimpleFormat
 from .level import DEBUG, INFO, NOTICE, WARNING, ERROR
+from .write import Writer, StderrWriter
+
 
 class Log:
 	def __init__(self, msg: str):
@@ -28,10 +31,15 @@ class Log:
 
 
 class LogPipeline(Log):
-	def __init__(self, w: Writer=None):
+	def __init__(self, w: Writer=None, f: Format=None):
 		self.writer = w
 		if not self.writer:
 			self.writer = StderrWriter()
+		self.format = f
+		if not self.format:
+			self.format = SimpleFormat()
 
 	def log(self, level: int, msg: str):
-		self.writer.write(msg)
+		e = Event(level, msg)
+		line = self.format.format(e)
+		self.writer.write(line)

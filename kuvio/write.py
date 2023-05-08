@@ -6,7 +6,8 @@ from io import TextIOBase
 from sys import stderr
 
 class Writer:
-	pass
+	def write(self, msg: bytes):
+		raise Exception('Not implemented')
 
 class TextIOWriter(Writer):
 	"""
