@@ -1,0 +1,23 @@
+# Root is a reserved name,
+root:
+  format: json
+  write:
+    - stderr
+  level: warn
+
+# Define a new logged called 'custom_package' that logs
+# debug level to a specific file
+custom_package:
+  source:
+    package: "hirsi.formatters"
+  format: json
+  write:
+    - file:
+        name: custom_log.json
+  level: debug
+
+# Disable log messages from a third party package
+disable_deps:
+  source:
+    package: "requests"
+  state: disabled
