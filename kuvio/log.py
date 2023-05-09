@@ -3,43 +3,56 @@ Logs filter and augment messages
 """
 from .event import Event
 from .format import Format, SimpleFormat
-from .level import DEBUG, INFO, NOTICE, WARNING, ERROR
+from .level import Level, DEBUG, INFO, NOTICE, WARNING, ERROR
 from .write import Writer, StderrWriter
 
 
 class Log:
-	def __init__(self, msg: str):
-		pass
+    def __init__(self, msg: str):
+        pass
 
-	def debug(self, msg: str):
-		self.log(DEBUG, msg)
+    def update(self, new_log):
+        pass
 
-	def info(self, msg: str):
-		self.log(INFO, msg)
+    def debug(self, msg: str):
+        self.log(DEBUG, msg)
 
-	def notice(self, msg: str):
-		self.log(WARNING, msg)
+    def info(self, msg: str):
+        self.log(INFO, msg)
 
-	def warning(self, msg: str):
-		self.log(WARNING, msg)
+    def notice(self, msg: str):
+        self.log(WARNING, msg)
 
-	def error(self, msg: str):
-		self.log(ERROR, msg)
+    def warning(self, msg: str):
+        self.log(WARNING, msg)
 
-	def log(self, level: int, msg: str):
-		pass
+    def error(self, msg: str):
+        self.log(ERROR, msg)
+
+    def log(self, level: int, msg: str):
+        pass
 
 
 class LogPipeline(Log):
-	def __init__(self, w: Writer=None, f: Format=None):
-		self.writer = w
-		if not self.writer:
-			self.writer = StderrWriter()
-		self.format = f
-		if not self.format:
-			self.format = SimpleFormat()
+    def __init__(self, name: str, level: Level, w: Writer = None, f: Format = None):
+        self.name = name
+        self.level = level
 
-	def log(self, level: int, msg: str):
-		e = Event(level, msg)
-		line = self.format.format(e)
-		self.writer.write(line)
+        self.writer = w
+        if not self.writer:
+            self.writer = StderrWriter()
+
+        self.format = f
+        if not self.format:
+            self.format = SimpleFormat()
+
+    def log(self, level: int, msg: str):
+        e = Event(level, msg)
+        line = self.format.format(e)
+        self.writer.write(line)
+
+    def update(self, new_log: Log):
+        assert self.name == new_log.name
+        self.level = new_log.level
+        self.writer = new_log.writer
+        self.format = new_log.format

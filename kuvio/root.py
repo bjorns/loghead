@@ -2,8 +2,9 @@
 Root logging
 """
 from .log import LogPipeline
+from .factory import _logs
 
-_root_logger = LogPipeline()
 
 def info(msg: str):
-	_root_logger.info(msg)
+    root_logger = _logs.get("root")
+    root_logger.info(msg)

@@ -3,13 +3,12 @@ root:
   format: json
   write:
     - stderr
-  level: warn
+  level: warning
 
 # Define a new logged called 'custom_package' that logs
 # debug level to a specific file
 custom_package:
-  source:
-    package: "kuvio.formatters"
+  source: "kuvio.formatters"
   format: json
   write:
     - file:
@@ -18,6 +17,5 @@ custom_package:
 
 # Disable log messages from a third party package
 disable_deps:
-  source:
-    package: "requests"
+  source: "requests"
   state: disabled

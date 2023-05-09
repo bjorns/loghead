@@ -3,6 +3,8 @@ We redefine the log levels to line up with logging package just in case.
 We add one extra level NOTICE which is for important but non-error related
 messages.
 """
+from .error import UserError
+
 
 class Level:
 	def __init__(self, value: int, name: str):
@@ -20,3 +22,22 @@ WARNING = Level(30, 'warning')
 ERROR = Level(40, 'error')
 FATAL = Level(50, 'fatal')
 DISABLED = Level(100, 'disabled')
+
+ALL_LEVELS = [
+    DEBUG,
+    INFO,
+    NOTICE,
+    WARNING,
+    ERROR,
+    FATAL,
+    DISABLED
+]
+
+LEVEL_BY_NAME = {l.name: l for l in ALL_LEVELS}
+
+def get_level(name: str) -> Level:
+    ret = LEVEL_BY_NAME.get(name)
+    if ret is None:
+        names = LEVEL_BY_NAME.keys()
+        raise UserError(f"Requested level {name} not found, available: {', '.join(names)}")
+    return ret
