@@ -6,7 +6,7 @@ from .event import Event
 
 class Format:
     def __init__(self):
-        pass
+        self.name = 'null'
 
     def format(self, e: Event) -> str:
         pass
@@ -15,6 +15,7 @@ class Format:
 class SimpleFormat(Format):
     def __init__(self):
         super(SimpleFormat, self).__init__()
+        self.name = 'simple'
 
     def format(self, e: Event) -> str:
         return f"{e.level.name}: {e.msg}"

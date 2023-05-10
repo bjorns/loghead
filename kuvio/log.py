@@ -4,7 +4,7 @@ Logs filter and augment messages
 from .event import Event
 from .format import Format, SimpleFormat
 from .level import Level, DEBUG, INFO, NOTICE, WARNING, ERROR
-from .write import Writer, StderrWriter
+from .drain import Drain, StderrDrain
 
 
 class Log:
@@ -34,13 +34,13 @@ class Log:
 
 
 class LogPipeline(Log):
-    def __init__(self, name: str, level: Level, w: Writer = None, f: Format = None):
+    def __init__(self, name: str, level: Level, drain: Drain = None, f: Format = None):
         self.name = name
         self.level = level
 
-        self.writer = w
-        if not self.writer:
-            self.writer = StderrWriter()
+        self.drain = drain
+        if not self.drain:
+            self.drain = StderrDrain()
 
         self.format = f
         if not self.format:
@@ -49,10 +49,13 @@ class LogPipeline(Log):
     def log(self, level: int, msg: str):
         e = Event(level, msg)
         line = self.format.format(e)
-        self.writer.write(line)
+        self.drain.write(line)
 
     def update(self, new_log: Log):
         assert self.name == new_log.name
         self.level = new_log.level
-        self.writer = new_log.writer
+        self.drain = new_log.drain
         self.format = new_log.format
+
+    def __repr__(self) -> str:
+        return f"LogPipeline<{self.name},{self.level.name},{self.format.name},{self.drain.name}>"
