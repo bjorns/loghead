@@ -34,9 +34,11 @@ class Log:
 
 
 class LogPipeline(Log):
-    def __init__(self, name: str, level: Level, drain: Drain = None, f: Format = None):
+    def __init__(self, name: str, level: Level=None, drain: Drain = None, f: Format = None):
         self.name = name
         self.level = level
+        if self.level is None:
+            self.level = INFO
 
         self.drain = drain
         if not self.drain:

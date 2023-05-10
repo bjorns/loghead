@@ -4,8 +4,12 @@
 from .config import Config, PipelineConfig
 from .level import Level, get_level
 from .log import Log, LogPipeline
+from .root import root_log
 
-_logs = dict()
+_logs = {
+    'root': root_log
+}
+
 
 
 def get_log(name: str) -> Log:

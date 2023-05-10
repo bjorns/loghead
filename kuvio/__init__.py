@@ -3,7 +3,7 @@ Kuvio is a new logging package for Python. Its primary goals are beauty and deve
 """
 from .config import load_config
 from .factory import load_environment
-from .root import info
+from .root import debug, info, notice, warning, error
 
 
 def init(path: str):
