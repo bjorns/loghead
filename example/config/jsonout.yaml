@@ -19,3 +19,5 @@ custom_package:
 disable_deps:
   source: "requests"
   state: disabled
+  extra: hejlkasdlaksjd laasdas asas asd  asdsa
+  foobar: as asdsadsxxx asdsdadasdas

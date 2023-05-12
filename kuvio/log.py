@@ -8,7 +8,7 @@ from .drain import Drain, StderrDrain
 
 
 class Log:
-    def __init__(self, msg: str):
+    def __init__(self):
         pass
 
     def update(self, new_log):
@@ -34,7 +34,8 @@ class Log:
 
 
 class LogPipeline(Log):
-    def __init__(self, name: str, level: Level=None, drain: Drain = None, f: Format = None):
+    def __init__(self, name: str, level: Level = None, drain: Drain = None, f: Format = None):
+        super(LogPipeline, self).__init__()
         self.name = name
         self.level = level
         if self.level is None:
@@ -53,7 +54,7 @@ class LogPipeline(Log):
         line = self.format.format(e)
         self.drain.write(line)
 
-    def update(self, new_log: Log):
+    def update(self, new_log):
         assert self.name == new_log.name
         self.level = new_log.level
         self.drain = new_log.drain

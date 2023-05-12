@@ -9,6 +9,7 @@ setup(
 	description='A kind logger',
 	packages=['kuvio'],
 	install_requires=[
-		'PyYaml >= 6.0'
+		'PyYaml >= 6.0',
+		'watchdog>=3.0.0'
 	],
 )

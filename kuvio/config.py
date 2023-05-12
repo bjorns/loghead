@@ -4,8 +4,11 @@ The config allows for pre-configured loggers in YAML format.
 TODO:
 * Add schema
 """
-from os.path import basename
+from os.path import basename, dirname
+
 import yaml
+
+from .debug import debuglog
 
 
 class Config:
@@ -21,10 +24,16 @@ class Config:
     def __repr__(self):
         return f"Config<{self.filepath}>"
 
+    def update(self, other):
+        self.filepath = other.filepath
+        self.filename = other.filename
+        self.pipelines = other.pipelines
+
 
 class PipelineConfig:
     """
     """
+
     def __init__(self, name: str, level: str):
         self.name = name
         self.level = level
@@ -40,7 +49,8 @@ def load_config(path: str) -> Config:
     with open(path, "r") as f:
         conf = yaml.safe_load(f)
         pipelines = parse_pipelines(conf)
-        return Config(path, pipelines)
+        config = Config(path, pipelines)
+        return config
 
 
 def parse_pipelines(conf: dict) -> list[PipelineConfig]:

@@ -7,13 +7,14 @@ from .error import UserError
 
 
 class Level:
-	def __init__(self, value: int, name: str):
-		assert name.isalpha()
-		assert name.islower()
-		self.name = name
-		assert value <= 100
-		assert value > 0
-		self.value = value
+    def __init__(self, value: int, name: str):
+        assert name.isalpha()
+        assert name.islower()
+        self.name = name
+        assert value <= 100
+        assert value > 0
+        self.value = value
+
 
 DEBUG = Level(10, 'debug')
 INFO = Level(20, 'info')
@@ -35,9 +36,11 @@ ALL_LEVELS = [
 
 LEVEL_BY_NAME = {l.name: l for l in ALL_LEVELS}
 
+
 def get_level(name: str) -> Level:
     ret = LEVEL_BY_NAME.get(name)
     if ret is None:
         names = LEVEL_BY_NAME.keys()
-        raise UserError(f"Requested level {name} not found, available: {', '.join(names)}")
+        raise UserError(
+            f"Requested level {name} not found, available: {', '.join(names)}")
     return ret

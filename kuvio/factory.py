@@ -11,7 +11,6 @@ _logs = {
 }
 
 
-
 def get_log(name: str) -> Log:
     """
     """
