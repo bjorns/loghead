@@ -12,4 +12,7 @@ setup(
 		'PyYaml >= 6.0',
 		'watchdog>=3.0.0'
 	],
+	tests_require=[
+		'pytest==7.3.1'
+	]
 )

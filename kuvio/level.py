@@ -4,8 +4,10 @@ We add one extra level NOTICE which is for important but non-error related
 messages.
 """
 from .error import UserError
+from functools import total_ordering
 
 
+@total_ordering
 class Level:
     def __init__(self, value: int, name: str):
         assert name.isalpha()
@@ -14,6 +16,12 @@ class Level:
         assert value <= 100
         assert value > 0
         self.value = value
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __lt__(self, other):
+        return self.value < other.value
 
 
 DEBUG = Level(10, 'debug')
