@@ -1,10 +1,9 @@
 """
 Root log convenience functions
 """
-from .level import INFO
 from .log import LogPipeline
 
-root_log = LogPipeline(name='root', level=INFO)
+root_log = LogPipeline(name='root')
 
 
 def debug(msg: str):

@@ -2,7 +2,8 @@
 
 """
 from .config import Config, PipelineConfig
-from .level import Level, get_level
+from .filter import LevelFilter
+from .level import get_level
 from .log import Log, LogPipeline
 from .root import root_log
 
@@ -17,7 +18,7 @@ def get_log(name: str) -> Log:
     log = _logs.get(name, None)
     if log is None:
         # todo: find closest logger
-        log = LogPipeline()
+        log = LogPipeline(name)
     return log
 
 
@@ -41,4 +42,4 @@ def load_pipeline(pipeline_config: PipelineConfig) -> LogPipeline:
     Create a log pipeline from the config.
     """
     level = get_level(pipeline_config.level)
-    return LogPipeline(name=pipeline_config.name, level=level)
+    return LogPipeline(pipeline_config.name, LevelFilter(level))
