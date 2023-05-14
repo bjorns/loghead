@@ -23,6 +23,9 @@ class Level:
     def __lt__(self, other):
         return self.value < other.value
 
+    def __repr__(self):
+        return f"{self.name}({self.value})"
+
 
 DEBUG = Level(10, 'debug')
 INFO = Level(20, 'info')
