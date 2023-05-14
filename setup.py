@@ -13,6 +13,7 @@ setup(
 		'watchdog>=3.0.0'
 	],
 	tests_require=[
-		'pytest==7.3.1'
+		'pytest==7.3.1',
+		'pytest-cov==7.3.1'
 	]
 )

@@ -1,6 +1,26 @@
+from pytest import raises
+
 from kuvio.event import Event
-from kuvio.filter import LevelFilter, PROCESSED, TERMINATED
+from kuvio.error import UnimplementedError
+from kuvio.filter import Filter, LevelFilter, PROCESSED, TERMINATED
 from kuvio.level import ALL_LEVELS, DEBUG, INFO, NOTICE, WARNING, ERROR
+
+
+def test_status_string_format():
+    assert str(PROCESSED) == "status:processed"
+    assert str(TERMINATED) == "status:terminated"
+
+
+def test_baseclass_string_format():
+    subject = Filter("base_filter")
+    assert str(subject) == "filter:base_filter"
+
+
+def test_baseclass_process_throws_exception():
+    with raises(UnimplementedError):
+        subject = Filter("base_filter")
+        event = Event(INFO, "hello")
+        subject.process(event)
 
 
 def test_known_levels_in_all_levels():
