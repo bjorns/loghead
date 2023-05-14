@@ -3,8 +3,9 @@ from watchdog.observers import Observer
 from watchdog.observers.polling import PollingObserver
 
 from .config import Config, load_config
+from .error import UserError
 from .factory import load_environment
-from .debug import debuglog
+from .internal import debuglog
 
 
 class ConfigEventHandler(FileSystemEventHandler):
@@ -21,19 +22,25 @@ class ConfigEventHandler(FileSystemEventHandler):
         """
         File was modified
         """
-        super(ConfigEventHandler, self).on_modified(event)
-        debuglog("file modified event: %s", event.src_path)
-        c = load_config(event.src_path)
-        load_environment(c)
+        try:
+            super(ConfigEventHandler, self).on_modified(event)
+            debuglog("file modified event: %s", event.src_path)
+            c = load_config(event.src_path)
+            load_environment(c)
+        except UserError as e:
+            debuglog("error: %s", e)
 
     def on_created(self, event):
         """
         For whatever reason a file save often shows up as a file created event.
         """
-        super(ConfigEventHandler, self).on_created(event)
-        debuglog("file created event: %s", event.src_path)
-        c = load_config(event.src_path)
-        load_environment(c)
+        try:
+            super(ConfigEventHandler, self).on_created(event)
+            debuglog("file created event: %s", event.src_path)
+            c = load_config(event.src_path)
+            load_environment(c)
+        except UserError as e:
+            debuglog("error: %s", e)
 
 
 class ConfigFileWatchdog:

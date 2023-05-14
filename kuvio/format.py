@@ -1,6 +1,7 @@
 """
 
 """
+from json import dumps as jsondump
 from .event import Event
 
 
@@ -19,3 +20,12 @@ class SimpleFormat(Format):
 
     def format(self, e: Event) -> str:
         return f"{e.level.name}: {e.msg}"
+
+
+class SimpleJsonFormat(Format):
+    def __init__(self):
+        super(SimpleJsonFormat, self).__init__()
+        self.name = 'json'
+
+    def format(self, e: Event):
+        return f"{{\"message\":{jsondump(str(e.msg))}}}"

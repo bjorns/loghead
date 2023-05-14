@@ -4,11 +4,9 @@ The config allows for pre-configured loggers in YAML format.
 TODO:
 * Add schema
 """
-from os.path import basename, dirname
+from os.path import basename
 
 import yaml
-
-from .debug import debuglog
 
 
 class Config:
@@ -34,9 +32,10 @@ class PipelineConfig:
     """
     """
 
-    def __init__(self, name: str, level: str):
+    def __init__(self, name: str, level: str, form: str):
         self.name = name
         self.level = level
+        self.format = form
 
     def __repr__(self) -> str:
         return f"PipelineConfig<{self.name}>"
@@ -53,13 +52,17 @@ def load_config(path: str) -> Config:
         return config
 
 
+def parse_pipeline_config(name, pipeline_data: dict) -> PipelineConfig:
+    level = parse_level(pipeline_data)
+    formatter = parse_format(pipeline_data)
+    p = PipelineConfig(name, level=level, form=formatter)
+    return p
+
+
 def parse_pipelines(conf: dict) -> list[PipelineConfig]:
     ret = list()
     for name, pipeline_data in conf.items():
-        print(name)
-        print(pipeline_data)
-        level = parse_level(pipeline_data)
-        p = PipelineConfig(name, level)
+        p = parse_pipeline_config(name, pipeline_data)
         ret.append(p)
     return ret
 
@@ -67,4 +70,9 @@ def parse_pipelines(conf: dict) -> list[PipelineConfig]:
 def parse_level(pipeline_data: dict) -> str:
     val = pipeline_data.get("level", "info")
     # todo: validate
+    return val
+
+
+def parse_format(pipeline_data: dict) -> str:
+    val = pipeline_data.get("format", "simple")
     return val

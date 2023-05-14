@@ -2,7 +2,9 @@
 
 """
 from .config import Config, PipelineConfig
+from .error import UserError
 from .filter import LevelFilter
+from .format import Format, SimpleFormat, SimpleJsonFormat
 from .level import get_level
 from .log import Log, LogPipeline
 from .root import root_log
@@ -37,9 +39,24 @@ def load_environment(config: Config):
             _logs[new_log.name] = new_log
 
 
+def load_level(level_name: str) -> LevelFilter:
+    level = get_level(level_name)
+    return LevelFilter(level)
+
+
+def load_format(format_name: str) -> Format:
+    if format_name == 'simple':
+        return SimpleFormat()
+    elif format_name == 'json':
+        return SimpleJsonFormat()
+    else:
+        raise UserError(f"Unknown format requested: {format_name}")
+
+
 def load_pipeline(pipeline_config: PipelineConfig) -> LogPipeline:
     """
     Create a log pipeline from the config.
     """
-    level = get_level(pipeline_config.level)
-    return LogPipeline(pipeline_config.name, LevelFilter(level))
+    level_filter = load_level(pipeline_config.level)
+    form = load_format(pipeline_config.format)
+    return LogPipeline(pipeline_config.name, level_filter, form)

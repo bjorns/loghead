@@ -1,6 +1,6 @@
 # Root is a reserved name,
 root:
-  format: json
+  format: simple
   write:
     - stderr
   level: info
