@@ -2,7 +2,7 @@
 Define "Writer" classes, these are objects responsible for writing formatted log
 messages to a drain stream. This could be a file or stderr e.g.
 """
-from io import TextIOBase
+from io import TextIOBase, TextIOWrapper
 from sys import stderr
 
 from .error import BaseclassError
@@ -22,7 +22,7 @@ class TextIODrain(Drain):
     type of stderr/stdout.
     """
 
-    def __init__(self, f: TextIOBase):
+    def __init__(self, f: TextIOWrapper):
         super(TextIODrain, self).__init__()
         self.name = 'textio'
         self.f = f
