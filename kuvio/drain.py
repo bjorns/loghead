@@ -5,13 +5,15 @@ messages to a drain stream. This could be a file or stderr e.g.
 from io import TextIOBase
 from sys import stderr
 
+from .error import BaseclassError
+
 
 class Drain:
     def __init__(self):
         self.name = "null"
 
-    def write(self, msg: bytes):
-        raise Exception("Not implemented")
+    def write(self, msg: str):
+        raise BaseclassError("Not implemented")
 
 
 class TextIODrain(Drain):
