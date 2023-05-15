@@ -5,6 +5,7 @@ from .config import Config, PipelineConfig
 from .error import UserError
 from .filter import LevelFilter
 from .format import Format, SimpleFormat, SimpleJsonFormat
+from .internal import debuglog
 from .level import get_level
 from .log import Log, LogPipeline
 from .root import root_log
@@ -31,12 +32,13 @@ def load_environment(config: Config):
     global _logs
     for pipeline_config in config.pipelines:
         new_log = load_pipeline(pipeline_config)
-        print(new_log)
+        debuglog("loaded log: %s", new_log)
         if new_log.name in _logs:
             log = _logs[new_log.name]
             log.update(new_log)
         else:
             _logs[new_log.name] = new_log
+    debuglog("")
 
 
 def load_level(level_name: str) -> LevelFilter:

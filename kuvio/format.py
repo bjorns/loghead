@@ -19,7 +19,7 @@ class SimpleFormat(Format):
         self.name = 'simple'
 
     def format(self, e: Event) -> str:
-        return f"{e.level.name}: {e.msg}"
+        return f"{e.timestamp.isoformat()} {e.level.name}: {e.msg}"
 
 
 class SimpleJsonFormat(Format):
@@ -28,4 +28,4 @@ class SimpleJsonFormat(Format):
         self.name = 'json'
 
     def format(self, e: Event):
-        return f"{{\"message\":{jsondump(str(e.msg))}}}"
+        return f"{{\"time\":{jsondump(e.timestamp.isoformat())},\"message\":{jsondump(str(e.msg))}}}"
