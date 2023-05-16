@@ -21,7 +21,10 @@ class Environment:
         Map closest available log. E.g. if requesting package.module and
         package exist, return it. If not, return root logger.
         """
-        return self.logs[name]
+        ret = self.logs.get(name)
+        if ret is None:
+            ret = self.get_root_log()
+        return ret
 
     def set_log(self, name: str, log: Log):
         self.logs[name] = log
@@ -45,11 +48,7 @@ def get_root_log():
 def get_log(name: str) -> Log:
     """
     """
-    log = _env.get_log(name)
-    if log is None:
-        # todo: find closest logger
-        log = LogPipeline(name)
-    return log
+    return _env.get_log(name)
 
 
 def set_log(name: str, log: Log):
