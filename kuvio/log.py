@@ -2,8 +2,8 @@
 Logs are the main interface for users to interact with the package.
 """
 from .event import Event
-from .error import UserError
-from .filter import Filter, LevelFilter, PROCESSED, TERMINATED
+from .error import UserError, BaseclassError
+from .filter import Filter, LevelFilter, TERMINATED
 from .format import Format, SimpleFormat
 from .level import Level, DEBUG, INFO, NOTICE, WARNING, ERROR
 from .drain import Drain, StderrDrain
@@ -37,6 +37,16 @@ class Log:
 
     def log(self, level: Level, msg: str):
         pass
+
+    def get_level(self) -> Level:
+        """
+        get_level() is a convenience method allowing a user to query the log
+        what level it is expecting to log on.
+        """
+        raise BaseclassError(f"Log {self} does not have a level")
+
+    def get_format(self) -> Format:
+        raise BaseclassError(f"Log {self} does not have a format")
 
 
 class LogPipeline(Log):
@@ -105,5 +115,24 @@ class LogPipeline(Log):
         self.format = new_log.format
         self.drains = new_log.drains
 
+    def get_level(self) -> Level:
+        """
+        get_level() is a convenience method allowing a user to query the log
+        what level it is expecting to log on.
+        Note that it is low performance and should not be called in a running
+        program other than for debugging or setup logic.
+        """
+        for f in self.filters:
+            if type(f) == LevelFilter:
+                level_filter: LevelFilter = f
+                return level_filter.cutoff
+        raise UserError(f"{self} does not have a level filter defined and cannot so does not define a level.")
+
+    def get_format(self) -> Format:
+        if self.format:
+            return self.format
+        raise BaseclassError(f"Log {self} does not have a format")
+
     def __repr__(self) -> str:
         return f"LogPipeline<{self.name}>"
+

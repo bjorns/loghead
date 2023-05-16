@@ -9,25 +9,6 @@ from os.path import basename
 import yaml
 
 
-class Config:
-    """
-    Data type representing the standard logging config file
-    """
-
-    def __init__(self, filepath: str, pipelines: list):
-        self.filepath = filepath
-        self.filename = basename(filepath)
-        self.pipelines = pipelines
-
-    def __repr__(self):
-        return f"Config<{self.filepath}>"
-
-    def update(self, other):
-        self.filepath = other.filepath
-        self.filename = other.filename
-        self.pipelines = other.pipelines
-
-
 class PipelineConfig:
     """
     """
@@ -39,6 +20,25 @@ class PipelineConfig:
 
     def __repr__(self) -> str:
         return f"PipelineConfig<{self.name}>"
+
+
+class Config:
+    """
+    Data type representing the standard logging config file
+    """
+
+    def __init__(self, filepath: str, pipelines: list[PipelineConfig]):
+        self.filepath = filepath
+        self.filename = basename(filepath)
+        self.pipelines = pipelines
+
+    def __repr__(self):
+        return f"Config<{self.filepath}>"
+
+    def update(self, other):
+        self.filepath = other.filepath
+        self.filename = other.filename
+        self.pipelines = other.pipelines
 
 
 def load_config(path: str) -> Config:

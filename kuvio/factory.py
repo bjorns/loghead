@@ -3,7 +3,7 @@
 """
 from .config import Config, PipelineConfig
 from .environment import Environment, get_global_env
-from .error import UserError
+from .error import BadConfigError
 from .filter import LevelFilter
 from .format import Format, SimpleFormat, SimpleJsonFormat
 from .internal import debuglog
@@ -51,7 +51,7 @@ def load_format(format_name: str) -> Format:
     elif format_name == 'json':
         return SimpleJsonFormat()
     else:
-        raise UserError(f"Unknown format requested: {format_name}")
+        raise BadConfigError(f"Unknown format requested: {format_name}")
 
 
 def load_pipeline(pipeline_config: PipelineConfig) -> LogPipeline:

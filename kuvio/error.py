@@ -21,6 +21,15 @@ class BaseclassError(UserError):
     pass
 
 
+class BadConfigError(UserError):
+    """
+    The system tried to load a config that it does not recognize
+
+    TODO: can we add file line info here?
+    """
+    pass
+
+
 class UnimplementedError(LogheadError):
     """
     This functionality is not implemented yet but the user is not
