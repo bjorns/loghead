@@ -2,51 +2,50 @@
 
 """
 from .config import Config, PipelineConfig
+from .environment import Environment, get_global_env
 from .error import UserError
 from .filter import LevelFilter
 from .format import Format, SimpleFormat, SimpleJsonFormat
 from .internal import debuglog
 from .level import get_level
-from .log import Log, LogPipeline
-from .root import root_log
-
-_logs = {
-    'root': root_log
-}
+from .log import LogPipeline
 
 
-def get_log(name: str) -> Log:
-    """
-    """
-    log = _logs.get(name, None)
-    if log is None:
-        # todo: find closest logger
-        log = LogPipeline(name)
-    return log
-
-
-def load_environment(config: Config):
+def load_environment(config: Config, env: Environment = None) -> Environment:
     """
     Create or update the current environment from the confif
+
+    :param config: The Config object to load into env
+    :param env: The environment to load, if None, default to global env.
     """
-    global _logs
+    if env is None:
+        env = get_global_env()
     for pipeline_config in config.pipelines:
         new_log = load_pipeline(pipeline_config)
         debuglog("loaded log: %s", new_log)
-        if new_log.name in _logs:
-            log = _logs[new_log.name]
+        if env.has_log(new_log.name):
+            log = env.get_log(new_log.name)
             log.update(new_log)
         else:
-            _logs[new_log.name] = new_log
+            env.set_log(new_log.name, new_log)
     debuglog("")
+    return env
 
 
 def load_level(level_name: str) -> LevelFilter:
+    """
+    Convert the level string from config to a LevelFilter object that allows
+    only higherleveled log events.
+    """
     level = get_level(level_name)
     return LevelFilter(level)
 
 
 def load_format(format_name: str) -> Format:
+    """
+    Parse the format setting from config and create a foramtter object
+    for the final log pipeline.
+    """
     if format_name == 'simple':
         return SimpleFormat()
     elif format_name == 'json':

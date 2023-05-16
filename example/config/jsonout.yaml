@@ -3,7 +3,7 @@ root:
   format: simple
   write:
     - stderr
-  level: info
+  level: debug
 
 # Define a new logged called 'custom_package' that logs
 # debug level to a specific file
