@@ -62,4 +62,3 @@ def test_load_environment_with_json_log():
 def test_load_environment_with_unknown_format():
     with raises(BadConfigError):
         load_test_environment(form='doesnt_exist')
-        

@@ -1,7 +1,7 @@
 """
 The log event captures the full context of the log invocation
 """
-from datetime import datetime, timezone
+from datetime import datetime
 
 from .level import Level
 

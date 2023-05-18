@@ -3,6 +3,7 @@
 """
 from json import dumps as jsondump
 from .event import Event
+from .error import BaseclassError
 
 
 class Format:
@@ -10,7 +11,7 @@ class Format:
         self.name = 'null'
 
     def format(self, e: Event) -> str:
-        pass
+        raise BaseclassError("Baseclass {self} does not implement format")
 
 
 class SimpleFormat(Format):
