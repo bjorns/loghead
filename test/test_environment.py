@@ -1,5 +1,5 @@
-from kuvio.environment import Environment, get_root_log, has_log, set_log, get_log, get_global_env
-from kuvio.log import LogPipeline
+from loghead.environment import Environment, get_root_log, has_log, set_log, get_log, get_global_env
+from loghead.log import LogPipeline
 
 
 def test_root_log():

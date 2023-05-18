@@ -1,4 +1,4 @@
-from kuvio.config import load_config
+from loghead.config import load_config
 
 
 def test_load_file():

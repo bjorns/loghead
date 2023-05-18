@@ -4,9 +4,9 @@ setup:
 	pip3 install -e .
 
 cov:
-	pytest --cov kuvio --cov-report=html test/
+	pytest --cov loghead --cov-report=html test/
 
 test:
-	pytest --cov kuvio test/
+	pytest --cov loghead test/
 
 .PHONY: all setup test

@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from pytest import raises
 
-from kuvio.drain import Drain, TextIODrain, StderrDrain
-from kuvio.error import BaseclassError
+from loghead.drain import Drain, TextIODrain, StderrDrain
+from loghead.error import BaseclassError
 
 
 def test_write_to_baseclass_throws():
@@ -22,7 +22,7 @@ def test_textio_drain():
     assert buf.getvalue() == "test\n"
 
 
-@patch('kuvio.drain.stderr', new_callable=StringIO)
+@patch('loghead.drain.stderr', new_callable=StringIO)
 def test_stderr_drain(stderr: StringIO):
     d = StderrDrain()
     d.write("hello stderr")

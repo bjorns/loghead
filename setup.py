@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-	name='kuviolog',
+	name='loghead',
 	version='0.0.1',
-	url='https://github.com/bjorns/kuviolog.git',
+	url='https://github.com/bjorns/loghead.git',
 	author='Bjorn Skoglund',
-	author_email='kuvioadmin@fastmail.com',
+	author_email='logheadadmin@fastmail.com',
 	description='A kind logger',
-	packages=['kuvio'],
+	packages=['loghead'],
 	install_requires=[
 		'PyYaml >= 6.0',
 		'watchdog>=3.0.0'

@@ -1,7 +1,7 @@
 from pytest import raises
 
-from kuvio.error import UserError
-from kuvio.level import Level, ALL_LEVELS, DEBUG, INFO, NOTICE, WARNING, ERROR, get_level
+from loghead.error import UserError
+from loghead.level import Level, ALL_LEVELS, DEBUG, INFO, NOTICE, WARNING, ERROR, get_level
 
 
 def test_level_string_representation():

@@ -3,10 +3,10 @@ from unittest.mock import patch, Mock
 
 from pytest import raises
 
-from kuvio.event import Event
-from kuvio.error import BaseclassError
-from kuvio.format import Format, SimpleFormat, SimpleJsonFormat
-from kuvio.level import INFO
+from loghead.event import Event
+from loghead.error import BaseclassError
+from loghead.format import Format, SimpleFormat, SimpleJsonFormat
+from loghead.level import INFO
 
 
 def test_baseclass_throws():
@@ -16,7 +16,7 @@ def test_baseclass_throws():
         f.format(e)
 
 
-@patch('kuvio.event.datetime')
+@patch('loghead.event.datetime')
 def test_simpleformat_format(mock_datetime):
     now = datetime.now()
     mock_datetime.now = Mock(return_value=now)
@@ -25,7 +25,7 @@ def test_simpleformat_format(mock_datetime):
     assert f.format(e) == f"{now.isoformat()} info: hello, world!"
 
 
-@patch('kuvio.event.datetime')
+@patch('loghead.event.datetime')
 def test_simplejsonformat_foramt(mock_datetime):
     now = datetime.now()
     mock_datetime.now = Mock(return_value=now)

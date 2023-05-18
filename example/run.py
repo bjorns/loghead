@@ -1,17 +1,17 @@
 from sys import stderr, exit
 from time import sleep
-import kuvio
+import loghead
 
 
 def main():
-    kuvio.init('example/config/jsonout.yaml')
+    loghead.init('example/config/jsonout.yaml')
     try:
         while True:
-            kuvio.debug("Hello, world!");
-            kuvio.info("Hello, world!");
-            kuvio.notice("Hello, world!");
-            kuvio.warning("Hello, world!");
-            kuvio.error("Hello, world!");
+            loghead.debug("Hello, world!");
+            loghead.info("Hello, world!");
+            loghead.notice("Hello, world!");
+            loghead.warning("Hello, world!");
+            loghead.error("Hello, world!");
             stderr.write('\n')
             sleep(1)
     except KeyboardInterrupt:

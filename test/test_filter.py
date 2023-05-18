@@ -1,9 +1,9 @@
 from pytest import raises
 
-from kuvio.event import Event
-from kuvio.error import UnimplementedError
-from kuvio.filter import Filter, LevelFilter, PROCESSED, TERMINATED
-from kuvio.level import ALL_LEVELS, DEBUG, INFO, NOTICE, WARNING, ERROR
+from loghead.event import Event
+from loghead.error import UnimplementedError
+from loghead.filter import Filter, LevelFilter, PROCESSED, TERMINATED
+from loghead.level import ALL_LEVELS, DEBUG, INFO, NOTICE, WARNING, ERROR
 
 
 def test_status_string_format():

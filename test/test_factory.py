@@ -1,11 +1,11 @@
 from pytest import raises
 
-from kuvio.config import Config, PipelineConfig
-from kuvio.environment import Environment
-from kuvio.error import BadConfigError
-from kuvio.factory import load_environment
-from kuvio.format import SimpleFormat, SimpleJsonFormat
-from kuvio.level import DEBUG, INFO
+from loghead.config import Config, PipelineConfig
+from loghead.environment import Environment
+from loghead.error import BadConfigError
+from loghead.factory import load_environment
+from loghead.format import SimpleFormat, SimpleJsonFormat
+from loghead.level import DEBUG, INFO
 
 DEFAULT_PIPELINE_NAME = 'test_pipeline'
 

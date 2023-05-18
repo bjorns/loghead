@@ -8,7 +8,7 @@ root:
 # Define a new logged called 'custom_package' that logs
 # debug level to a specific file
 custom_package:
-  source: "kuvio.formatters"
+  source: "loghead.formatters"
   format: json
   write:
     - file:

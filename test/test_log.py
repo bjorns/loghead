@@ -1,6 +1,6 @@
 from pytest import raises
-from kuvio.log import Log
-from kuvio.error import BaseclassError
+from loghead.log import Log
+from loghead.error import BaseclassError
 
 
 def test_log_throws():
