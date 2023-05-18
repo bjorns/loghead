@@ -18,7 +18,7 @@ class Log:
         pass
 
     def update(self, new_log):
-        pass
+        raise BaseclassError("Log does not implement update()")
 
     def debug(self, msg: str):
         self.log(DEBUG, msg)
@@ -36,7 +36,7 @@ class Log:
         self.log(ERROR, msg)
 
     def log(self, level: Level, msg: str):
-        pass
+        raise BaseclassError(f"Log {self} does not implement log()")
 
     def get_level(self) -> Level:
         """
