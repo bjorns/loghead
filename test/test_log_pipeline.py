@@ -24,7 +24,7 @@ def test_standard_pipeline(mock_datetime):
     log.debug("debug logs are filtered")
     log.info("hello world")
 
-    assert buf.getvalue() == f"{now.isoformat()} info: hello world\n"
+    assert buf.getvalue() == f"{now.strftime('%H:%M:%S')} info: hello world\n"
 
 
 @patch('loghead.event.datetime')
@@ -39,7 +39,7 @@ def test_force_level_filter(mock_datetime):
     log.debug("debug logs are filtered")
     log.info("hello world")
 
-    assert buf.getvalue() == f"{now.isoformat()} info: hello world\n"
+    assert buf.getvalue() == f"{now.strftime('%H:%M:%S')} info: hello world\n"
     assert log.get_level() == INFO
 
 
@@ -55,7 +55,7 @@ def test_force_default_simpled_format(mock_datetime):
     log.info("hello world")
 
     # Simple format is still deployed
-    assert buf.getvalue() == f"{now.isoformat()} info: hello world\n"
+    assert buf.getvalue() == f"{now.strftime('%H:%M:%S')} info: hello world\n"
 
 
 def test_double_format_throws():
@@ -83,7 +83,7 @@ def test_update_log_pipeline(mock_datetime):
     assert log1.name == "test-pipeline"
 
     log1.warning("hello world")
-    assert buf.getvalue() == f"{now.isoformat()} warning: hello world\n"
+    assert buf.getvalue() == f"{now.strftime('%H:%M:%S')} warning: hello world\n"
 
 
 class NullFilter(Filter):

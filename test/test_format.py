@@ -22,7 +22,7 @@ def test_simpleformat_format(mock_datetime):
     mock_datetime.now = Mock(return_value=now)
     f = SimpleFormat()
     e = Event(INFO, "hello, world!")
-    assert f.format(e) == f"{now.isoformat()} info: hello, world!"
+    assert f.format(e) == f"{now.strftime('%H:%M:%S')} info: hello, world!"
 
 
 @patch('loghead.event.datetime')
