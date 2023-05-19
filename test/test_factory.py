@@ -4,7 +4,6 @@ from loghead.config import Config, PipelineConfig
 from loghead.environment import Environment
 from loghead.error import BadConfigError
 from loghead.factory import load_environment
-from loghead.format import SimpleFormat, SimpleJsonFormat
 from loghead.level import DEBUG, INFO
 
 DEFAULT_PIPELINE_NAME = 'test_pipeline'
@@ -12,7 +11,7 @@ DEFAULT_PIPELINE_NAME = 'test_pipeline'
 
 def load_test_environment(pipeline_name=DEFAULT_PIPELINE_NAME, form='simple', level='info',
                           filepath='test/config/single_pipeline.yaml', global_env=False):
-    p = PipelineConfig(name=pipeline_name, form=form, level=level)
+    p = PipelineConfig(name=pipeline_name, form=form, level=level, line_num=1)
     c = Config(filepath=filepath, pipelines=[p])
     e = None if global_env else Environment()
     return load_environment(c, env=e)
@@ -43,7 +42,7 @@ def test_load_environment_with_updated_config():
     The global environment may have other logs from other tests.
     """
     pipeline_name = 'test_pipeline'
-    p = PipelineConfig(name=pipeline_name, form='simple', level='info')
+    p = PipelineConfig(name=pipeline_name, form='simple', level='info', line_num=1)
     c = Config(filepath="test/config/single_pipeline.yaml", pipelines=[p])
     e = Environment()
     e = load_environment(c, env=e)
