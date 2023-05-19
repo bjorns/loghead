@@ -8,7 +8,12 @@ from .watch import ConfigFileWatchdog
 
 
 def init(path: str):
-    c = load_config(path)
-    load_environment(c)
-    booboo = ConfigFileWatchdog(c)
+    """
+    Initialize environment
+
+    :param path: File path to yaml config file.
+    """
+    config = load_config(path)
+    load_environment(config)
+    booboo = ConfigFileWatchdog(config)
     booboo.sit_booboo()
