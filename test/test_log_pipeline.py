@@ -10,7 +10,7 @@ from loghead.event import Event
 from loghead.filter import Filter, LevelFilter, Status, PROCESSED
 from loghead.format import SimpleFormat, SimpleJsonFormat
 from loghead.level import INFO, WARNING, ALL_LEVELS
-from loghead.log import Log, LogPipeline
+from loghead.log import LogPipeline
 
 
 @patch('loghead.event.datetime')

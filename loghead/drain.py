@@ -2,17 +2,24 @@
 Define "Writer" classes, these are objects responsible for writing formatted log
 messages to a drain stream. This could be a file or stderr e.g.
 """
-from io import TextIOBase, TextIOWrapper
+from io import TextIOWrapper
 from sys import stderr
 
 from .error import BaseclassError
 
 
 class Drain:
+    """
+    Generic baseclass for drain classes
+    """
     def __init__(self):
         self.name = "null"
 
     def write(self, msg: str):
+        """
+        Write a message to the drain. Message is assumed to be preformatted
+        using a Format object.
+        """
         raise BaseclassError("Not implemented")
 
 
@@ -23,7 +30,7 @@ class TextIODrain(Drain):
     """
 
     def __init__(self, f: TextIOWrapper):
-        super(TextIODrain, self).__init__()
+        super().__init__()
         self.name = 'textio'
         self.f = f
 
@@ -38,5 +45,5 @@ class StderrDrain(TextIODrain):
     """
 
     def __init__(self):
-        super(StderrDrain, self).__init__(stderr)
+        super().__init__(stderr)
         self.name = 'stderr'
