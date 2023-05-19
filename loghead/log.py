@@ -128,9 +128,9 @@ class LogPipeline(Log):
                 return level_filter.cutoff
         raise UserError(f"{self} does not have a level filter defined and cannot so does not define a level.")
 
-    def get_format(self) -> Format:
+    def get_format(self) -> str:
         if self.format:
-            return self.format
+            return self.format.name
         raise BaseclassError(f"Log {self} does not have a format")
 
     def __repr__(self) -> str:

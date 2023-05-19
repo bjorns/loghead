@@ -25,7 +25,7 @@ def test_load_basic_environment():
     assert e.has_log(DEFAULT_PIPELINE_NAME)
     log = e.get_log(DEFAULT_PIPELINE_NAME)
     assert log.get_level() == INFO
-    assert type(log.get_format()) == SimpleFormat
+    assert log.get_format() == 'simple'
 
 
 def test_load_global_environment():
@@ -56,7 +56,7 @@ def test_load_environment_with_updated_config():
 def test_load_environment_with_json_log():
     e = load_test_environment(form='json')
     log = e.get_log(DEFAULT_PIPELINE_NAME)
-    assert type(log.get_format()) == SimpleJsonFormat
+    assert log.get_format() == 'json'
 
 
 def test_load_environment_with_unknown_format():
