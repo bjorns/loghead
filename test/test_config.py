@@ -1,4 +1,7 @@
+from pytest import raises
+
 from loghead.config import load_config
+from loghead.error import BadConfigError
 
 
 def test_load_file():
@@ -19,7 +22,6 @@ def test_str_representation():
 
 
 def test_update_config():
-
     config = load_config('test/config/single_pipeline.yaml')
     second_config = load_config('test/config/single_pipeline_updated.yaml')
     config.update(second_config)
@@ -29,3 +31,9 @@ def test_update_config():
     pipeline_config = config.pipelines[0]
     assert pipeline_config.name == 'my_log'
     assert pipeline_config.level == 'info'
+
+
+def test_bad_level_config_error():
+    with raises(BadConfigError) as e:
+        load_config('test/config/bad_level.yaml')
+    assert str(e.value) == "line 3..3: Level does_not_exist does not exist"

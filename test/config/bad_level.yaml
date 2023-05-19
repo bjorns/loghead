@@ -1,0 +1,3 @@
+# Adding a comment to make the section start after line 1
+my_log:
+  level: does_not_exist
