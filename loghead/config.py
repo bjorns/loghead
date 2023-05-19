@@ -34,9 +34,7 @@ class ConfigError(UserError):
         self.loc = loc
 
     def __str__(self):
-        if self.loc:
-            return f"{self.loc.filename}:{self.loc.line_start}..{self.loc.line_end}: {self.message}"
-        return self.message
+        return repr(self)
 
     def __repr__(self):
         if self.loc:
@@ -152,10 +150,11 @@ def parse_level(pipeline_data: dict) -> str:
     """
     val = pipeline_data.get("level", "info")
     if not isinstance(val, str):
-        raise InternalError(f"Expected level: property to be string, got {type(val)}({val})")
+        raise ConfigError(f"Expected level: property to be string, got {type(val).__name__}({val})",
+                          loc=_safe_loc(pipeline_data))
     if val not in LEVEL_BY_NAME:
         raise ConfigError(f"Level {val} does not exist",
-                          loc=pipeline_data.get('__loc__'))
+                          loc=_safe_loc(pipeline_data))
     return val
 
 
@@ -165,7 +164,8 @@ def parse_format(pipeline_data: dict) -> str:
     """
     val = pipeline_data.get("format", "simple")
     if not isinstance(val, str):
-        raise InternalError(f"Expected format: property to be string, got {type(val)}({val})")
+        raise ConfigError(f"Expected format property to be string, got {type(val).__name__}({val})",
+                          loc=_safe_loc(pipeline_data))
     return val
 
 
@@ -175,6 +175,10 @@ def parse_location(data: dict) -> Location:
     SafeLineLoader.
     """
     location = data.get('__loc__')
-    if not isinstance(location.line_start, int) or not isinstance(location.line_end, int):
-        raise InternalError(f"No line number property was located in data node: {data}")
+    if location is None:
+        return Location(filename='unknown', line_start=-1, line_end=-1)
     return location
+
+
+def _safe_loc(data: dict):
+    return data.get('__loc__')
