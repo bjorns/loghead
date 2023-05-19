@@ -1,7 +1,6 @@
 from pytest import raises
 
-from loghead.config import load_config
-from loghead.error import BadConfigError
+from loghead.config import load_config, ConfigError
 
 
 def test_load_file():
@@ -34,6 +33,6 @@ def test_update_config():
 
 
 def test_bad_level_config_error():
-    with raises(BadConfigError) as e:
+    with raises(ConfigError) as e:
         load_config('test/config/bad_level.yaml')
-    assert str(e.value) == "line 3..3: Level does_not_exist does not exist"
+    assert str(e.value) == "bad_level.yaml:3..3: Level does_not_exist does not exist"

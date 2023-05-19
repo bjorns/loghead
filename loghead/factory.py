@@ -1,9 +1,8 @@
 """
-
+Convert config objects to log pipelines
 """
-from .config import Config, PipelineConfig
+from .config import Config, PipelineConfig, ConfigError
 from .environment import Environment, get_global_env
-from .error import BadConfigError
 from .filter import LevelFilter
 from .format import Format, SimpleFormat, SimpleJsonFormat
 from .internal import debuglog
@@ -48,10 +47,9 @@ def load_format(format_name: str) -> Format:
     """
     if format_name == 'simple':
         return SimpleFormat()
-    elif format_name == 'json':
+    if format_name == 'json':
         return SimpleJsonFormat()
-    else:
-        raise BadConfigError(f"Unknown format requested: {format_name}")
+    raise ConfigError(f"Unknown format requested: {format_name}")
 
 
 def load_pipeline(pipeline_config: PipelineConfig) -> LogPipeline:

@@ -4,12 +4,44 @@ The config allows for pre-configured loggers in YAML format.
 TODO:
 * Add schema
 """
+from dataclasses import dataclass
 from os.path import basename
 
 from yaml import load, SafeLoader
 
-from .error import InternalError, BadConfigError, ERROR_LINE_INTERVAL
+from .error import UserError, InternalError
 from .level import LEVEL_BY_NAME
+
+
+@dataclass
+class Location:
+    """
+    A collection of data for error reporting on where config originates.
+    """
+    filename: str
+    line_start: int
+    line_end: int
+
+
+class ConfigError(UserError):
+    """
+    The system tried to load a config that it does not recognize
+    """
+
+    def __init__(self, message: str, loc: Location = None):
+        super().__init__(message)
+        self.message = message
+        self.loc = loc
+
+    def __str__(self):
+        if self.loc:
+            return f"{self.loc.filename}:{self.loc.line_start}..{self.loc.line_end}: {self.message}"
+        return self.message
+
+    def __repr__(self):
+        if self.loc:
+            return f"{self.loc.filename}:{self.loc.line_start}..{self.loc.line_end}: {self.message}"
+        return self.message
 
 
 class PipelineConfig:
@@ -17,11 +49,11 @@ class PipelineConfig:
     Config for a single pipeline description in the larger Config object.
     """
 
-    def __init__(self, name: str, level: str, form: str, line_num: int):
+    def __init__(self, name: str, level: str, form: str, loc: Location = None):
         self.name = name
         self.level = level
         self.format = form
-        self.line_num = line_num
+        self.loc = loc
 
     def __repr__(self) -> str:
         return f"PipelineConfig<{self.name}>"
@@ -50,16 +82,21 @@ class Config:
         self.pipelines = other.pipelines
 
 
-class SafeLineLoader(SafeLoader):
+class LocationMetadataLoader(SafeLoader):
     """
     Loader class to counts line numbers for improved error reporting on bad
     config
     """
 
+    def __init__(self, filename: str, stream):
+        super().__init__(stream)
+        self.filename = filename
+
     def construct_mapping(self, node, deep=False):
         mapping = super().construct_mapping(node, deep=deep)
         # Add 1 so line numbering starts at 1
-        mapping['__line__'] = (node.start_mark.line + 1, node.end_mark.line)
+        mapping['__loc__'] = Location(filename=self.filename, line_start=node.start_mark.line + 1,
+                                      line_end=node.end_mark.line)
         return mapping
 
 
@@ -67,8 +104,15 @@ def load_config(path: str) -> Config:
     """
     Load config file to Config object.
     """
+
+    def _loader(stream):
+        """
+        Internal loader function to bind the filename parameter
+        """
+        return LocationMetadataLoader(basename(path), stream)
+
     with open(path, "r", encoding='utf-8') as f:
-        conf_data = load(f, Loader=SafeLineLoader)
+        conf_data = load(f, Loader=_loader)
         pipelines = parse_pipelines(conf_data)
         config = Config(path, pipelines)
         return config
@@ -79,26 +123,27 @@ def parse_pipelines(conf_data: dict) -> list[PipelineConfig]:
     Parse the pipelines defined in the config data.
     """
     ret = []
-    for name, pipeline_data in conf_data.items():
-        if name.startswith('__') and name.endswith('__'):
+    for pipeline_name, pipeline_data in conf_data.items():
+        if pipeline_name.startswith('__') and pipeline_name.endswith('__'):
+            # The config object will have a __line__ attribute which needs to be ignored.
             continue
-        pipeline_config = parse_pipeline_config(name, pipeline_data)
+        pipeline_config = parse_pipeline_config(pipeline_name, pipeline_data)
         ret.append(pipeline_config)
     return ret
 
 
-def parse_pipeline_config(name: str, pipeline_data: dict) -> PipelineConfig:
+def parse_pipeline_config(pipeline_name: str, pipeline_data: dict) -> PipelineConfig:
     """
     Generate a PipelineConfig object from the raw data read from the Yaml/Json
     file.
 
-    :param name: The name of the pipeline
+    :param pipeline_name: The name of the pipeline
     :param pipeline_data: the data read from Yaml.
     """
     level = parse_level(pipeline_data)
     formatter = parse_format(pipeline_data)
-    line_num = parse_line_number(pipeline_data)
-    return PipelineConfig(name, level=level, form=formatter, line_num=line_num)
+    loc = parse_location(pipeline_data)
+    return PipelineConfig(pipeline_name, level=level, form=formatter, loc=loc)
 
 
 def parse_level(pipeline_data: dict) -> str:
@@ -109,7 +154,8 @@ def parse_level(pipeline_data: dict) -> str:
     if not isinstance(val, str):
         raise InternalError(f"Expected level: property to be string, got {type(val)}({val})")
     if val not in LEVEL_BY_NAME:
-        raise BadConfigError(f"Level {val} does not exist", line_num=pipeline_data.get('__line__', -1))
+        raise ConfigError(f"Level {val} does not exist",
+                          loc=pipeline_data.get('__loc__'))
     return val
 
 
@@ -123,12 +169,12 @@ def parse_format(pipeline_data: dict) -> str:
     return val
 
 
-def parse_line_number(data: dict) -> tuple:
+def parse_location(data: dict) -> Location:
     """
     Each parsed node of the tree will have a '__line__' property thanks to
     SafeLineLoader.
     """
-    start, end = data.get('__line__', ERROR_LINE_INTERVAL)
-    if not isinstance(start, int) or not isinstance(end, int):
+    location = data.get('__loc__')
+    if not isinstance(location.line_start, int) or not isinstance(location.line_end, int):
         raise InternalError(f"No line number property was located in data node: {data}")
-    return start, end
+    return location
