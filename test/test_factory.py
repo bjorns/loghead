@@ -9,7 +9,7 @@ DEFAULT_PIPELINE_NAME = 'test_pipeline'
 
 
 def load_test_environment(pipeline_name=DEFAULT_PIPELINE_NAME, form='simple', level='info',
-                          filepath='test/config/single_pipeline.yaml', global_env=False):
+                          filepath='test/config/debug_log.yaml', global_env=False):
     p = PipelineConfig(name=pipeline_name, form=form, level=level)
     c = Config(filepath=filepath, pipelines=[p])
     e = None if global_env else Environment()
@@ -42,7 +42,7 @@ def test_load_environment_with_updated_config():
     """
     pipeline_name = 'test_pipeline'
     p = PipelineConfig(name=pipeline_name, form='simple', level='info')
-    c = Config(filepath="test/config/single_pipeline.yaml", pipelines=[p])
+    c = Config(filepath="test/config/debug_log.yaml", pipelines=[p])
     e = Environment()
     e = load_environment(c, env=e)
     p.level = 'debug'

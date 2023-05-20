@@ -31,7 +31,6 @@ class Drain:
         """
         Close any underlying resources
         """
-        raise BaseclassError("Not implemented")
 
 
 class TextIODrain(Drain):
