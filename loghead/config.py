@@ -3,7 +3,6 @@ The config allows for pre-configured loggers in YAML format.
 """
 from dataclasses import dataclass
 from os.path import basename
-from typing import Optional
 
 from yaml import load, SafeLoader
 
@@ -40,14 +39,23 @@ class ConfigError(UserError):
         return self.message
 
 
-@dataclass
 class DrainConfig:
     """
     A collection of info about the drain config
     """
-    name: str
-    properties: dict
-    loc: Optional[Location]
+
+    def __init__(self, drain_type: str, properties: dict = None):
+        self.type = drain_type
+        self.loc = None
+        if properties and '__loc__' in properties:
+            self.loc = properties['__loc__']
+            del properties['__loc__']
+        self.properties = properties or dict()
+
+    def __getattr__(self, item):
+        if item not in self.properties:
+            raise ConfigError(f"Missing property {item}")
+        return self.properties[item]
 
 
 class PipelineConfig:
@@ -205,13 +213,13 @@ def parse_drain_instance(drain_data) -> DrainConfig:
     The next option is a dict where the key is the name and the
     """
     if isinstance(drain_data, str):
-        return DrainConfig(name=drain_data, properties=dict(), loc=None)
+        return DrainConfig(drain_type=drain_data)
     elif isinstance(drain_data, dict):
         if len(drain_data) > 2:
             raise ConfigError(f"Write config should have a single item, found {len(drain_data)}: {drain_data}")
-        name = _first_of(drain_data.keys())
-        properties = drain_data[name]
-        return DrainConfig(name=name, properties=properties, loc=_safe_loc(drain_data))
+        drain_type = _first_of(drain_data.keys())
+        properties = drain_data[drain_type]
+        return DrainConfig(drain_type=drain_type, properties=properties)
     else:
         raise ConfigError(f"Unexpected write config {drain_data}, expected str or dict")
 

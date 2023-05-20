@@ -1,0 +1,6 @@
+my_log:
+  level: debug
+  write:
+    - file:
+        name: app.log
+    - stderr

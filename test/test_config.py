@@ -62,3 +62,26 @@ def test_int_format_config_error():
 def test_no_location():
     loc = parse_location(dict())
     assert loc == Location('unknown', line_start=-1, line_end=-1)
+
+
+def test_parse_file_drain_log():
+    config = load_config('test/config/file_drain.yaml')
+    assert len(config.pipelines) == 1
+    pipeline_config = config.pipelines[0]
+    assert len(pipeline_config.drains) == 1
+    drain = pipeline_config.drains[0]
+    assert drain.type == 'file'
+    assert drain.loc == Location('file_drain.yaml', line_start=5, line_end=4)
+
+
+def test_parse_multiple_drains_log():
+    config = load_config('test/config/multiple_drains.yaml')
+    assert len(config.pipelines) == 1
+    pipeline_config = config.pipelines[0]
+    assert len(pipeline_config.drains) == 2
+    file_drain = pipeline_config.drains[0]
+    assert file_drain.type == 'file'
+    assert file_drain.loc == Location('multiple_drains.yaml', line_start=5, line_end=5)
+    stderr_drain = pipeline_config.drains[1]
+    assert stderr_drain.type == 'stderr'
+    assert stderr_drain.loc is None  # why is this?
