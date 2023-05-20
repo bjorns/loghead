@@ -2,8 +2,9 @@
 root:
   format: simple
   write:
-    file:
-      name: foobar
+    - stderr
+    - file:
+        name: root.log
   level: debug
 
 # Define a new logged called 'custom_package' that logs
@@ -18,10 +19,6 @@ custom_package:
         rotate:
           max_size: 16M
           schedule: weekly
-    - datadog:
-        host: logingest.datadoghq.com
-    - custom:
-        class: mypackage.CustomDrain
   level: debug
 
 # Disable log messages from a third party package

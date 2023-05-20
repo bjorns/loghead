@@ -1,6 +1,8 @@
 """
 Logs are the main interface for users to interact with the package.
 """
+from datetime import datetime
+
 from .event import Event
 from .error import UserError, BaseclassError
 from .filter import Filter, LevelFilter, TERMINATED
@@ -18,24 +20,45 @@ class Log:
         pass
 
     def update(self, new_log):
+        """
+        merge new_log object properties into self
+        """
         raise BaseclassError("Log does not implement update()")
 
     def debug(self, msg: str):
+        """
+        Write debug message to log
+        """
         self.log(DEBUG, msg)
 
     def info(self, msg: str):
+        """
+        Write info message to log
+        """
         self.log(INFO, msg)
 
     def notice(self, msg: str):
+        """
+        Write notice message to log
+        """
         self.log(NOTICE, msg)
 
     def warning(self, msg: str):
+        """
+        Write warning message to log
+        """
         self.log(WARNING, msg)
 
     def error(self, msg: str):
+        """
+        Write error message to log
+        """
         self.log(ERROR, msg)
 
     def log(self, level: Level, msg: str):
+        """
+        Write message to log
+        """
         raise BaseclassError(f"Log {self} does not implement log()")
 
     def get_level(self) -> Level:
@@ -45,7 +68,10 @@ class Log:
         """
         raise BaseclassError(f"Log {self} does not have a level")
 
-    def get_format(self) -> Format:
+    def get_format(self) -> str:
+        """
+        Get the current format name from the log
+        """
         raise BaseclassError(f"Log {self} does not have a format")
 
 
@@ -69,7 +95,7 @@ class LogPipeline(Log):
     """
 
     def __init__(self, name: str, *components):
-        super(LogPipeline, self).__init__()
+        super().__init__()
         self.name = name
         self.filters = list()
         self.format = None
@@ -80,12 +106,14 @@ class LogPipeline(Log):
                 self.filters.append(component)
             elif issubclass(type(component), Format):
                 if self.format is not None:
-                    raise UserError(f"A log pipeline cannot have two formats: {self.format} and {component}")
+                    raise UserError(f"A log pipeline cannot have two formats: {self.format} and "
+                                    f"{component}")
                 self.format = component
             elif issubclass(type(component), Drain):
                 self.drains.append(component)
             else:
-                raise UserError(f"Object {component}({type(component)}) is not a supported component")
+                raise UserError(f"Object {component}({type(component)}) "
+                                f"is not a supported component")
 
         if len(self.filters) == 0:
             self.filters.append(LevelFilter(INFO))
@@ -106,6 +134,7 @@ class LogPipeline(Log):
                 return
 
         line = self.format.format(event)
+        print(self.drains)
         for drain in self.drains:
             drain.write(line)
 
@@ -123,7 +152,7 @@ class LogPipeline(Log):
         program other than for debugging or setup logic.
         """
         for f in self.filters:
-            if type(f) == LevelFilter:
+            if isinstance(f, LevelFilter):
                 level_filter: LevelFilter = f
                 return level_filter.cutoff
         raise UserError(f"{self} does not have a level filter defined and cannot so does not define a level.")
@@ -135,4 +164,3 @@ class LogPipeline(Log):
 
     def __repr__(self) -> str:
         return f"LogPipeline<{self.name}>"
-

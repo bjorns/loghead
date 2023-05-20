@@ -1,7 +1,8 @@
 """
 Convert config objects to log pipelines
 """
-from .config import Config, PipelineConfig, ConfigError
+from .config import Config, PipelineConfig, ConfigError, DrainConfig
+from .drain import Drain, StderrDrain, FileDrain
 from .environment import Environment, get_global_env
 from .filter import LevelFilter
 from .format import Format, SimpleFormat, SimpleJsonFormat
@@ -31,6 +32,17 @@ def load_environment(config: Config, env: Environment = None) -> Environment:
     return env
 
 
+def load_pipeline(pipeline_config: PipelineConfig) -> LogPipeline:
+    """
+    Create a log pipeline from the config.
+    """
+    level_filter = load_level(pipeline_config.level)
+    form = load_format(pipeline_config.format)
+    drains = load_drains(pipeline_config.drains)
+    print(drains)
+    return LogPipeline(pipeline_config.name, level_filter, form, *drains)
+
+
 def load_level(level_name: str) -> LevelFilter:
     """
     Convert the level string from config to a LevelFilter object that allows
@@ -52,10 +64,21 @@ def load_format(format_name: str) -> Format:
     raise ConfigError(f"Unknown format requested: {format_name}")
 
 
-def load_pipeline(pipeline_config: PipelineConfig) -> LogPipeline:
+def load_drains(drain_configs: list[DrainConfig]) -> list[Drain]:
     """
-    Create a log pipeline from the config.
+    Generate all drains required for the pipeline. A Pipeline can have multiple drains such as
+    a file and the standard error stream.
     """
-    level_filter = load_level(pipeline_config.level)
-    form = load_format(pipeline_config.format)
-    return LogPipeline(pipeline_config.name, level_filter, form)
+    return list(load_drain(drain_config) for drain_config in drain_configs)
+
+
+def load_drain(drain_config: DrainConfig) -> Drain:
+    """
+    Create Drain component from the provided config
+    """
+    if drain_config.name == 'stderr':
+        return StderrDrain()
+    if drain_config.name == 'file':
+        return FileDrain(filepath=drain_config.properties['name'])
+    else:
+        raise ConfigError(f"Unknown drain config {drain_config}", drain_config.loc)

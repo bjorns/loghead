@@ -3,6 +3,7 @@ The config allows for pre-configured loggers in YAML format.
 """
 from dataclasses import dataclass
 from os.path import basename
+from typing import Optional
 
 from yaml import load, SafeLoader
 
@@ -40,12 +41,13 @@ class ConfigError(UserError):
 
 
 @dataclass
-class WriteConfig:
+class DrainConfig:
     """
     A collection of info about the drain config
     """
     name: str
     properties: dict
+    loc: Optional[Location]
 
 
 class PipelineConfig:
@@ -53,12 +55,12 @@ class PipelineConfig:
     Config for a single pipeline description in the larger Config object.
     """
 
-    def __init__(self, name: str, level: str, form: str, loc: Location = None,
-                 write: list[WriteConfig] = None):
+    def __init__(self, name: str, level: str, form: str, drains: list[DrainConfig] = None,
+                 loc: Location = None):
         self.name = name
         self.level = level
         self.format = form
-        self.write = write or list()
+        self.drains = drains or list()
         self.loc = loc
 
     def __repr__(self) -> str:
@@ -148,9 +150,9 @@ def parse_pipeline_config(pipeline_name: str, pipeline_data: dict) -> PipelineCo
     """
     level = parse_level(pipeline_data)
     formatter = parse_format(pipeline_data)
-    write = parse_write_section(pipeline_data)
+    drains = parse_drains_section(pipeline_data)
     loc = parse_location(pipeline_data)
-    return PipelineConfig(pipeline_name, level=level, form=formatter, loc=loc, write=write)
+    return PipelineConfig(pipeline_name, level=level, form=formatter, loc=loc, drains=drains)
 
 
 def parse_level(pipeline_data: dict) -> str:
@@ -178,15 +180,15 @@ def parse_format(pipeline_data: dict) -> str:
     return val
 
 
-def parse_write_section(pipeline_data: dict) -> list[WriteConfig]:
+def parse_drains_section(pipeline_data: dict) -> list[DrainConfig]:
     """
     Load the write property in pipeline config.
     """
     write_data = pipeline_data.get('write', 'stderr')
     if isinstance(write_data, list):
-        return [parse_write_instance(instance) for instance in write_data]
+        return [parse_drain_instance(instance) for instance in write_data]
     else:
-        return [parse_write_instance(write_data)]
+        return [parse_drain_instance(write_data)]
 
 
 def _first_of(iterable):
@@ -194,7 +196,7 @@ def _first_of(iterable):
         return item
 
 
-def parse_write_instance(write_data) -> WriteConfig:
+def parse_drain_instance(drain_data) -> DrainConfig:
     """
     The write section can have multiple setups. The simplest one is a plain string e.g.
 
@@ -202,17 +204,16 @@ def parse_write_instance(write_data) -> WriteConfig:
 
     The next option is a dict where the key is the name and the
     """
-    if isinstance(write_data, str):
-        return WriteConfig(name=write_data, properties=dict())
-    elif isinstance(write_data, dict):
-        if len(write_data) > 2:
-            raise ConfigError(f"Write config should have a single item, found {len(write_data)}:"
-                              f" {write_data}")
-        name = _first_of(write_data.keys())
-        properties = write_data[name]
-        return WriteConfig(name=name, properties=properties)
+    if isinstance(drain_data, str):
+        return DrainConfig(name=drain_data, properties=dict(), loc=None)
+    elif isinstance(drain_data, dict):
+        if len(drain_data) > 2:
+            raise ConfigError(f"Write config should have a single item, found {len(drain_data)}: {drain_data}")
+        name = _first_of(drain_data.keys())
+        properties = drain_data[name]
+        return DrainConfig(name=name, properties=properties, loc=_safe_loc(drain_data))
     else:
-        raise ConfigError(f"Unexpected write config {write_data}, expected str or dict")
+        raise ConfigError(f"Unexpected write config {drain_data}, expected str or dict")
 
 
 def parse_location(data: dict) -> Location:
