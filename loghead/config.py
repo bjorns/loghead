@@ -1,15 +1,12 @@
 """
 The config allows for pre-configured loggers in YAML format.
-
-TODO:
-* Add schema
 """
 from dataclasses import dataclass
 from os.path import basename
 
 from yaml import load, SafeLoader
 
-from .error import UserError, InternalError
+from .error import UserError
 from .level import LEVEL_BY_NAME
 
 
@@ -42,15 +39,26 @@ class ConfigError(UserError):
         return self.message
 
 
+@dataclass
+class WriteConfig:
+    """
+    A collection of info about the drain config
+    """
+    name: str
+    properties: dict
+
+
 class PipelineConfig:
     """
     Config for a single pipeline description in the larger Config object.
     """
 
-    def __init__(self, name: str, level: str, form: str, loc: Location = None):
+    def __init__(self, name: str, level: str, form: str, loc: Location = None,
+                 write: list[WriteConfig] = None):
         self.name = name
         self.level = level
         self.format = form
+        self.write = write or list()
         self.loc = loc
 
     def __repr__(self) -> str:
@@ -140,8 +148,9 @@ def parse_pipeline_config(pipeline_name: str, pipeline_data: dict) -> PipelineCo
     """
     level = parse_level(pipeline_data)
     formatter = parse_format(pipeline_data)
+    write = parse_write_section(pipeline_data)
     loc = parse_location(pipeline_data)
-    return PipelineConfig(pipeline_name, level=level, form=formatter, loc=loc)
+    return PipelineConfig(pipeline_name, level=level, form=formatter, loc=loc, write=write)
 
 
 def parse_level(pipeline_data: dict) -> str:
@@ -167,6 +176,43 @@ def parse_format(pipeline_data: dict) -> str:
         raise ConfigError(f"Expected format property to be string, got {type(val).__name__}({val})",
                           loc=_safe_loc(pipeline_data))
     return val
+
+
+def parse_write_section(pipeline_data: dict) -> list[WriteConfig]:
+    """
+    Load the write property in pipeline config.
+    """
+    write_data = pipeline_data.get('write', 'stderr')
+    if isinstance(write_data, list):
+        return [parse_write_instance(instance) for instance in write_data]
+    else:
+        return [parse_write_instance(write_data)]
+
+
+def _first_of(iterable):
+    for item in iterable:
+        return item
+
+
+def parse_write_instance(write_data) -> WriteConfig:
+    """
+    The write section can have multiple setups. The simplest one is a plain string e.g.
+
+      write: stderr
+
+    The next option is a dict where the key is the name and the
+    """
+    if isinstance(write_data, str):
+        return WriteConfig(name=write_data, properties=dict())
+    elif isinstance(write_data, dict):
+        if len(write_data) > 2:
+            raise ConfigError(f"Write config should have a single item, found {len(write_data)}:"
+                              f" {write_data}")
+        name = _first_of(write_data.keys())
+        properties = write_data[name]
+        return WriteConfig(name=name, properties=properties)
+    else:
+        raise ConfigError(f"Unexpected write config {write_data}, expected str or dict")
 
 
 def parse_location(data: dict) -> Location:

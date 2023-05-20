@@ -2,7 +2,8 @@
 root:
   format: simple
   write:
-    - stderr
+    file:
+      name: foobar
   level: debug
 
 # Define a new logged called 'custom_package' that logs
@@ -11,8 +12,16 @@ custom_package:
   source: "loghead.formatters"
   format: json
   write:
+    - stderr
     - file:
         name: custom_log.json
+        rotate:
+          max_size: 16M
+          schedule: weekly
+    - datadog:
+        host: logingest.datadoghq.com
+    - custom:
+        class: mypackage.CustomDrain
   level: debug
 
 # Disable log messages from a third party package

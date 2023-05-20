@@ -83,9 +83,13 @@ disable=bad-inline-option,
         deprecated-pragma,
         file-ignored,
         locally-disabled,
+        no-else-return,
         raw-checker-failed,
         suppressed-message,
         too-many-ancestors,
+        too-many-arguments,
+        use-dict-literal,
+        use-list-literal,
         use-symbolic-message-instead,
         useless-suppression
 
