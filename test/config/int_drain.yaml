@@ -1,0 +1,4 @@
+my_log:
+  level: debug
+  write: 4711
+

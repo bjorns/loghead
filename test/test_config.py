@@ -1,6 +1,6 @@
 from pytest import raises
 
-from loghead.config import load_config, ConfigError, Location, parse_location
+from loghead.config import load_config, ConfigError, Location, parse_location, DrainConfig
 
 
 def test_config_error():
@@ -85,3 +85,26 @@ def test_parse_multiple_drains_log():
     stderr_drain = pipeline_config.drains[1]
     assert stderr_drain.type == 'stderr'
     assert stderr_drain.loc is None  # why is this?
+
+
+def test_drain_with_multiple_props_raises():
+    with raises(ConfigError) as e:
+        load_config('test/config/drain_with_multi_prop.yaml')
+    expected_item = {
+        'file': {
+            'name': 'app.log'
+        },
+        'something_else': 'foobar'
+    }
+    assert str(e.value) == f"Write config should have a single item, found 2: {expected_item}"
+
+
+def test_drain_with_list():
+    with raises(ConfigError) as e:
+        load_config('test/config/int_drain.yaml')
+    assert str(e.value) == "Unexpected write config 4711, expected str or dict"
+
+
+def test_drain_config_repr():
+    assert repr(DrainConfig(drain_type='stderr')) == "DrainConfig<stderr>"
+   

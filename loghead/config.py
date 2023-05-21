@@ -52,10 +52,8 @@ class DrainConfig:
             del properties['__loc__']
         self.properties = properties or dict()
 
-    def __getattr__(self, item):
-        if item not in self.properties:
-            raise ConfigError(f"Missing property {item}")
-        return self.properties[item]
+    def __repr__(self):
+        return f"DrainConfig<{self.type}>"
 
 
 class PipelineConfig:
@@ -216,6 +214,7 @@ def parse_drain_instance(drain_data) -> DrainConfig:
         return DrainConfig(drain_type=drain_data)
     elif isinstance(drain_data, dict):
         if len(drain_data) > 2:
+            _remove_loc(drain_data)
             raise ConfigError(f"Write config should have a single item, found {len(drain_data)}: {drain_data}")
         drain_type = _first_of(drain_data.keys())
         properties = drain_data[drain_type]
@@ -237,3 +236,10 @@ def parse_location(data: dict) -> Location:
 
 def _safe_loc(data: dict):
     return data.get('__loc__')
+
+
+def _remove_loc(data: dict):
+    del data['__loc__']
+    for val in data.values():
+        if isinstance(val, dict):
+            _remove_loc(val)
