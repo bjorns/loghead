@@ -66,6 +66,7 @@ class FileDrain(TextIODrain):
 
     def __init__(self, filepath: str):
         self.created = datetime.now()
+        # pylint: disable=consider-using-with
         self.f = open(filepath, 'a', encoding='utf-8')
         super().__init__(self.f)
         self.name = f"file:{filepath}"
@@ -80,7 +81,6 @@ class FileDrain(TextIODrain):
         """
         self.f.close()
         self.f = None
-        raise Exception("Closing file drain")
 
     def __str__(self):
         return self.name

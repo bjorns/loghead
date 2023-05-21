@@ -3,12 +3,16 @@ We redefine the log levels to line up with logging package just in case.
 We add one extra level NOTICE which is for important but non-error related
 messages.
 """
-from .error import UserError
 from functools import total_ordering
+
+from .error import UserError
 
 
 @total_ordering
 class Level:
+    """
+    The level on which a log event is output (DEBUG, INFO, ERROR etc.).
+    """
     def __init__(self, value: int, name: str):
         assert name.isalpha()
         assert name.islower()
@@ -49,6 +53,10 @@ LEVEL_BY_NAME = {l.name: l for l in ALL_LEVELS}
 
 
 def get_level(name: str) -> Level:
+    """
+    Get a level object by name.
+    :return: The Level named <name>
+    """
     ret = LEVEL_BY_NAME.get(name)
     if ret is None:
         names = LEVEL_BY_NAME.keys()

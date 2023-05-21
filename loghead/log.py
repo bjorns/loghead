@@ -1,7 +1,6 @@
 """
 Logs are the main interface for users to interact with the package.
 """
-from datetime import datetime
 
 from .event import Event
 from .error import UserError, BaseclassError
