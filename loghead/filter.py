@@ -1,18 +1,21 @@
 """
 A filter can modify or terminate an event
-
 """
+
 from .event import Event
 from .level import Level
 from .error import UnimplementedError
 
 
 class Status:
-    def __init__(self, name: str):
-        self.name = name
+    """
+    The status of the
+    """
+    def __init__(self, value: str):
+        self.value = value
 
     def __repr__(self):
-        return f"status:{self.name}"
+        return f"status:{self.value}"
 
 
 TERMINATED = Status("terminated")
@@ -21,10 +24,18 @@ ERROR = Status("error")
 
 
 class Filter:
+    """
+    Filter and process events
+    """
     def __init__(self, name: str):
         self.name = name
 
     def process(self, event: Event) -> Status:
+        """
+        Modify or terminate events
+        :return: a status signifies if processing succeeeded or terminated the event in which case it
+        will not be further processed or output.
+        """
         raise UnimplementedError()
 
     def __repr__(self):
@@ -37,10 +48,14 @@ class LevelFilter(Filter):
     """
 
     def __init__(self, cutoff: Level):
-        super(LevelFilter, self).__init__('status')
+        super().__init__('status')
         self.cutoff = cutoff
 
     def process(self, event: Event) -> Status:
+        """
+        If the event is equal or higher level to the filters cutoff, it will return PROCESSED.
+        if the event has a lower level (e.g. DEBUG is lower than INFO) it will be TERMINATED.
+        """
         if event.level >= self.cutoff:
             return PROCESSED
         else:
