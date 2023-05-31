@@ -39,7 +39,6 @@ def load_pipeline(pipeline_config: PipelineConfig) -> LogPipeline:
     level_filter = load_level(pipeline_config.level)
     form = load_format(pipeline_config.format)
     drains = load_drains(pipeline_config.drains)
-    print(drains)
     return LogPipeline(pipeline_config.name, level_filter, form, *drains)
 
 
@@ -76,9 +75,9 @@ def load_drain(drain_config: DrainConfig) -> Drain:
     """
     Create Drain component from the provided config
     """
-    if drain_config.name == 'stderr':
+    if drain_config.type == 'stderr':
         return StderrDrain()
-    if drain_config.name == 'file':
+    if drain_config.type == 'file':
         return FileDrain(filepath=drain_config.properties['name'])
     else:
         raise ConfigError(f"Unknown drain config {drain_config}", drain_config.loc)

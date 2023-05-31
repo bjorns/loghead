@@ -1,5 +1,7 @@
 """
 Logs are the main interface for users to interact with the package.
+LogPipeline is the main implementation of a Log. It uses components to build a pipeline
+that processes and outputs each event.
 """
 
 from .event import Event
@@ -133,7 +135,6 @@ class LogPipeline(Log):
                 return
 
         line = self.format.format(event)
-        print(self.drains)
         for drain in self.drains:
             drain.write(line)
 
