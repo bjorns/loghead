@@ -79,8 +79,9 @@ class FileDrain(TextIODrain):
         """
         Close the underlying file
         """
-        self.f.close()
-        self.f = None
+        if self.f is not None:
+            self.f.close()
+            self.f = None
 
     def __str__(self):
         return self.name
