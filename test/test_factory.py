@@ -1,8 +1,9 @@
 from pytest import raises
 
-from loghead.config import Config, PipelineConfig, ConfigError
+from loghead.config import Config, PipelineConfig, ConfigError, DrainConfig
+from loghead.drain import StderrDrain, FileDrain
 from loghead.environment import Environment
-from loghead.factory import load_environment
+from loghead.factory import load_environment, load_drain
 from loghead.level import DEBUG, INFO
 
 DEFAULT_PIPELINE_NAME = 'test_pipeline'
@@ -60,3 +61,29 @@ def test_load_environment_with_json_log():
 def test_load_environment_with_unknown_format():
     with raises(ConfigError):
         load_test_environment(form='doesnt_exist')
+
+
+def test_load_environment_with_multiple_drains():
+    pipeline_name = 'test_pipeline'
+    p = PipelineConfig(name=pipeline_name, form='simple', level='info')
+    p.drains.append(DrainConfig(drain_type='stderr'))
+    p.drains.append(DrainConfig(drain_type='file', properties={'name': 'test.log'}))
+    c = Config(filepath="test/config/multiple_drains.yaml", pipelines=[p])
+    e = Environment()
+    e = load_environment(c, env=e)
+    drains = e.logs['test_pipeline'].drains
+    assert len(drains) == 2
+    assert isinstance(drains[0], StderrDrain)
+    assert drains[0].name == 'stderr'
+    assert isinstance(drains[1], FileDrain)
+    assert drains[1].name == 'file:test.log'
+
+
+def test_load_environment_with_bad_drain():
+    with raises(ConfigError):
+        pipeline_name = 'test_pipeline'
+        p = PipelineConfig(name=pipeline_name, form='simple', level='info')
+        p.drains.append(DrainConfig(drain_type='doesnt-exist'))
+        c = Config(filepath="test/config/multiple_drains.yaml", pipelines=[p])
+        e = Environment()
+        load_environment(c, env=e)
